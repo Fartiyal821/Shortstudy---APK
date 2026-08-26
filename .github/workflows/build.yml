@@ -26,7 +26,10 @@ jobs:
           echo "Building project in: $TARGET_DIR"
           cd "$TARGET_DIR"
 
-          # 2. Foojay Plugin को हटाएं जो CI बिल्ड रोक रहा है
+          # 2. Missing .env.example / .env फाइलें क्रिएट करें
+          touch .env.example .env
+
+          # 3. Foojay Plugin को हटाएं (जो CI पर इश्यू दे सकता है)
           if [ -f "settings.gradle" ]; then
             sed -i '/foojay/d' settings.gradle
           fi
@@ -34,7 +37,7 @@ jobs:
             sed -i '/foojay/d' settings.gradle.kts
           fi
 
-          # 3. APK बिल्ड शुरू करें
+          # 4. APK बिल्ड शुरू करें
           if [ -f "./gradlew" ]; then
             chmod +x ./gradlew
             ./gradlew assembleDebug --no-daemon
