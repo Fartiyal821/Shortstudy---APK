@@ -19,16 +19,28 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Build APK with System Gradle
+      - name: Build APK
         run: |
-          # ऑटोमैटिक उस फोल्डर में जाएं जहाँ main build.gradle मौजूद है
+          # 1. Main Project Directory ढूँढें
           TARGET_DIR=$(find . -maxdepth 3 -name "build.gradle*" -not -path "*/app/*" -exec dirname {} \; | head -n 1)
           echo "Building project in: $TARGET_DIR"
           cd "$TARGET_DIR"
-          gradle assembleDebug
+
+          # 2. Foojay Plugin को हटाएं जो CI बिल्ड रोक रहा है
+          if [ -f "settings.gradle" ]; then
+            sed -i '/foojay/d' settings.gradle
+          fi
+          if [ -f "settings.gradle.kts" ]; then
+            sed -i '/foojay/d' settings.gradle.kts
+          fi
+
+          # 3. APK बिल्ड शुरू करें
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleDebug --no-daemon
+          else
+            gradle assembleDebug --no-daemon
+          fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
