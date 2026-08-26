@@ -29,7 +29,12 @@ jobs:
           # 2. Missing .env.example / .env फाइलें क्रिएट करें
           touch .env.example .env
 
-          # 3. Foojay Plugin को हटाएं (जो CI पर इश्यू दे सकता है)
+          # 3. Missing debug.keystore अपने आप जनरेट करें
+          if [ ! -f "debug.keystore" ]; then
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+          # 4. Foojay Plugin को हटाएं
           if [ -f "settings.gradle" ]; then
             sed -i '/foojay/d' settings.gradle
           fi
@@ -37,7 +42,7 @@ jobs:
             sed -i '/foojay/d' settings.gradle.kts
           fi
 
-          # 4. APK बिल्ड शुरू करें
+          # 5. APK बिल्ड शुरू करें
           if [ -f "./gradlew" ]; then
             chmod +x ./gradlew
             ./gradlew assembleDebug --no-daemon
