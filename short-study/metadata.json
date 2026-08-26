@@ -1,0 +1,6 @@
+{
+  "name": "Short-Study",
+  "description": "Educational coding platform for Python, C, and Web Development notes with offline reading and syntax highlighting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
